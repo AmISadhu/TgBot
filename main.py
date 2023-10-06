@@ -2,6 +2,7 @@ import telebot
 import os
 from dotenv import load_dotenv
 from telebot import types
+import sqlite3
 
 load_dotenv()
 
@@ -17,7 +18,17 @@ def start(message):
 
 
 def hello(message):
-    bot.send_message(message.chat.id, f'Приятно познакомиться, {message.text}! Рад вас видеть!')
+    user_name = message.text
+    conn = sqlite3.connect('food_bot.sql')
+    cur = conn.cursor()
+
+    cur.execute('CREATE TABLE IF NOT EXISTS users (id integer primary key autoincrement, name varchar(50))')
+    cur.execute('INSERT INTO users(name) VALUES("%s")' % user_name)
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    bot.send_message(message.chat.id, f'Приятно познакомиться, {user_name}! Рад вас видеть!')
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     buttons = ('Рецепты', 'Список покупок', 'Заказать еду')
     markup.add(*buttons)
