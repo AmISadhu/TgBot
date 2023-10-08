@@ -228,7 +228,7 @@ def main(message):
         markup.add(btn1, back)
         bot.send_message(message.chat.id, 'Продолжить просмотр?', reply_markup=markup)
     elif message.text == 'Салат "Весенний"':
-        photo = r'https://eda.ru/recepty/salaty/salat-vesenniy-1264281'.format(
+        photo = r'https://eda.ru/recepty/salaty/salat-vesenniy-126428'.format(
             os.getcwd())
         bot.send_photo(message.chat.id, photo)
         markup = types.ReplyKeyboardMarkup()
