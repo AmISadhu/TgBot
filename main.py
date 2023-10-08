@@ -14,21 +14,35 @@ bot = telebot.TeleBot(token=BOT_TOKEN)
 def start(message):
     bot.send_message(message.chat.id,
                      'Я ваш помощник в выборе рецептов. Как мне к вам обращаться?')
+    # bot.send_message(message.chat.id, message)
+
     bot.register_next_step_handler(message, hello)
 
 
 def hello(message):
-    user_name = message.text
+    # connect bd
     conn = sqlite3.connect('food_bot.sql')
     cur = conn.cursor()
 
-    cur.execute('CREATE TABLE IF NOT EXISTS users (id integer primary key autoincrement, name varchar(50))')
-    cur.execute('INSERT INTO users(name) VALUES("%s")' % user_name)
+    # create table (id, nickname)
+    cur.execute('CREATE TABLE IF NOT EXISTS users (user_id integer primary key, nickname varchar(50))')
     conn.commit()
+
+    person_id = message.from_user.id
+    cur.execute(f"SELECT user_id FROM users WHERE user_id = {person_id}")
+    data = cur.fetchone()
+    if data is None:
+        cur.execute(
+            'INSERT INTO users(user_id, nickname) VALUES("%s", "%s")' % (
+                message.from_user.id, message.from_user.username))
+        conn.commit()
+        bot.send_message(message.chat.id, f'Приятно познакомиться, {message.text}! Рад вас видеть!')
+    else:
+        bot.send_message(message.chat.id, f"Вы уже со мной работали, я вас запомнил, {message.text}!😊")
+
     cur.close()
     conn.close()
 
-    bot.send_message(message.chat.id, f'Приятно познакомиться, {user_name}! Рад вас видеть!')
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     buttons = ('Рецепты', 'Список покупок', 'Заказать еду')
     markup.add(*buttons)
@@ -44,8 +58,46 @@ def main(message):
         btn3 = types.InlineKeyboardButton('Супы', callback_data='soup')
         markup.add(btn1, btn2, btn3)
         bot.send_message(message.chat.id, 'Что будем готовить?', reply_markup=markup)
+
     elif message.text == 'Список покупок':
-        ...
+        conn = sqlite3.connect('food_bot.sql')
+        cur = conn.cursor()
+        try:
+            # shopping_data = "\n".join(''.join(data).split(","))
+            cur.execute('SELECT id, shopping_list FROM food')
+            products = cur.fetchall()
+            info = ''
+            for el in products:
+                # ''.join(el.replace(' ', ''))
+                info += f'{el[0]}. {"".join(el[1].replace(" ", "")).title()}\n'
+            markup = types.ReplyKeyboardMarkup()
+            btn1 = types.KeyboardButton('Очистить список покупок')
+            back = types.KeyboardButton('Вернуться в главное меню')
+            markup.add(btn1, back)
+            bot.send_message(message.chat.id, f'Вот ваш список покупок:\n{info}', reply_markup=markup)
+        except sqlite3.OperationalError:
+            markup = types.ReplyKeyboardMarkup()
+            btn1 = types.KeyboardButton('Заполнить список покупок')
+            back = types.KeyboardButton('Вернуться в главное меню')
+            markup.row(btn1, back)
+            bot.send_message(message.chat.id, "Ваш список покупок пуст, желаете заполнить его?",
+                             reply_markup=markup)
+        cur.close()
+        conn.close()
+    elif message.text == 'Заполнить список покупок':
+        bot.send_message(message.chat.id, 'Вводите, пожалуйста, свои продукты через запятую')
+        bot.register_next_step_handler(message, shop_list)
+    elif message.text == 'Очистить список покупок':
+        conn = sqlite3.connect('food_bot.sql')
+        cur = conn.cursor()
+        cur.execute("DROP TABLE IF EXISTS food")
+        markup = types.ReplyKeyboardMarkup()
+        btn1 = types.KeyboardButton('Заполнить список покупок')
+        back = types.KeyboardButton('Вернуться в главное меню')
+        markup.row(btn1, back)
+        bot.send_message(message.chat.id, "Вы очистили список покупок, желаете заполнить его?",
+                         reply_markup=markup)
+
     elif message.text == 'Заказать еду':
         markup = types.InlineKeyboardMarkup()
         btn1 = types.InlineKeyboardButton('Пиццка', url='https://pzz.by/')
@@ -60,9 +112,9 @@ def main(message):
         markup = types.ReplyKeyboardMarkup()
         btn1 = types.KeyboardButton('Рецепт карбонары')
         btn2 = types.KeyboardButton('Ингредиенты')
-        btn3 = types.KeyboardButton('Вернуться в главное меню')
+        back = types.KeyboardButton('Вернуться в главное меню')
         markup.row(btn1, btn2)
-        markup.add(btn3)
+        markup.add(back)
         bot.send_message(message.chat.id, 'Что выберем?', reply_markup=markup)
     elif message.text == 'Рецепт карбонары':
         bot.send_message(message.chat.id, '1.Нарежьте ломтиками бекон и обжарьте на сковородке.\n'
@@ -140,6 +192,34 @@ def callback_message(callback):
         bot.send_message(callback.message.chat.id, 'Какой салат хотите сделать?', reply_markup=markup)
     else:
         bot.send_message(callback.message.chat.id, 'На такую команду  не запрограммирован(')
+
+
+def shop_list(message):
+    conn = sqlite3.connect('food_bot.sql')
+    cur = conn.cursor()
+    cur.execute(
+        'CREATE TABLE IF NOT EXISTS food (id integer primary key, shopping_list TEXT, users_id INTEGER, '
+        'FOREIGN KEY (users_id) REFERENCES users(user_id))')
+    conn.commit()
+    for i in message.text.split(","):
+        cur.execute(
+            'INSERT INTO food(shopping_list,users_id) VALUES("%s","%s")' % (
+                i, message.from_user.id
+            )
+        )
+        # shopping_data = "\n".join(''.join(data).split(","))
+        conn.commit()
+    # bot.send_message(message.chat.id, message.text)
+    markup = types.ReplyKeyboardMarkup()
+    btn1 = types.KeyboardButton('Список покупок')
+    btn2 = types.KeyboardButton('Очистить список покупок')
+    back = types.KeyboardButton('Вернуться в главное меню')
+    markup.add(btn1)
+    markup.row(btn2, back)
+    bot.send_message(message.chat.id, 'Список покупок сохранён, хотите его посмотреть?',
+                     reply_markup=markup)
+    cur.close()
+    conn.close()
 
 
 bot.polling(none_stop=True)
