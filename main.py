@@ -55,8 +55,7 @@ def main(message):
         markup = types.InlineKeyboardMarkup()
         btn1 = types.InlineKeyboardButton('Макароны', callback_data='pasta')
         btn2 = types.InlineKeyboardButton('Салаты', callback_data='salad')
-        btn3 = types.InlineKeyboardButton('Супы', callback_data='soup')
-        markup.add(btn1, btn2, btn3)
+        markup.add(btn1, btn2)
         bot.send_message(message.chat.id, 'Что будем готовить?', reply_markup=markup)
 
     elif message.text == 'Список покупок':
@@ -133,11 +132,11 @@ def main(message):
         bot.send_message(message.chat.id, 'Больше рецептов карбонары смотрите на сайте!',
                          reply_markup=markup)
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        btn1 = types.KeyboardButton('Ингредиенты')
+        btn1 = types.KeyboardButton('Ингредиенты карбонары')
         back = types.KeyboardButton('Вернуться в главное меню')
         markup.add(btn1, back)
         bot.send_message(message.chat.id, 'Продолжить просмотр?', reply_markup=markup)
-    elif message.text == 'Ингредиенты':
+    elif message.text == 'Ингредиенты карбонары':
         bot.send_message(message.chat.id, '1.Спагетти из твердых сортов пшеницы - 125 г.\n'
                                           '2.Сливки 20%-ные - 50 г.\n'
                                           '3.Бекон - 50 г.\n'
@@ -149,6 +148,126 @@ def main(message):
                                           'ингредиенты на кол-во персон.\n')
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         btn1 = types.KeyboardButton('Рецепт карбонары')
+        back = types.KeyboardButton('Вернуться в главное меню')
+        markup.add(btn1, back)
+        bot.send_message(message.chat.id, 'Продолжить просмотр?', reply_markup=markup)
+    elif message.text == 'Макароны с сыром':
+        photo = r'https://eda.ru/recepty/osnovnye-blyuda/makarony-s-syrom-91462'.format(
+            os.getcwd())
+        bot.send_photo(message.chat.id, photo)
+        markup = types.ReplyKeyboardMarkup()
+        btn1 = types.KeyboardButton('Рецепт макарон с сыром')
+        btn2 = types.KeyboardButton('Ингредиенты макарон с сыром')
+        back = types.KeyboardButton('Вернуться в главное меню')
+        markup.row(btn1, btn2)
+        markup.add(back)
+        bot.send_message(message.chat.id, 'Что выберем?', reply_markup=markup)
+    elif message.text == 'Рецепт макарон с сыром':
+        bot.send_message(message.chat.id, '1.Подогреть воду.\n'
+                                          '2.Закинуть макароны.\n'
+                                          '3.Натереть сыр. \n'
+                                          '4.Слить воду.\n'
+                                          '5.Добавить сыр и сливочное масло. \n')
+        markup = types.InlineKeyboardMarkup()
+        btn1 = types.InlineKeyboardButton('Макароны с сыром', url='https://eda.ru/recepty/makaroni')
+        markup.add(btn1)
+        bot.send_message(message.chat.id, 'Больше рецептов макарон с сыром смотрите на сайте!',
+                         reply_markup=markup)
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton('Ингредиенты макарон с сыром')
+        back = types.KeyboardButton('Вернуться в главное меню')
+        markup.add(btn1, back)
+        bot.send_message(message.chat.id, 'Продолжить просмотр?', reply_markup=markup)
+    elif message.text == 'Ингредиенты макарон с сыром':
+        bot.send_message(message.chat.id, '1.Макароны - 80 г.\n'
+                                          '2.Сыр - 25 г.\n'
+                                          '3.Бекон - 50 г.\n'
+                                          '4.Сливочное масло - 1 чайная ложка\n'
+                                          '5.Соль - по вкусу\n')
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton('Рецепт макарон с сыром')
+        back = types.KeyboardButton('Вернуться в главное меню')
+        markup.add(btn1, back)
+        bot.send_message(message.chat.id, 'Продолжить просмотр?', reply_markup=markup)
+    elif message.text == 'Яичный салат':
+        photo = r'https://eda.ru/recepty/salaty/jaichnij-salat-47456'.format(
+            os.getcwd())
+        bot.send_photo(message.chat.id, photo)
+        markup = types.ReplyKeyboardMarkup()
+        btn1 = types.KeyboardButton('Рецепт яичного салата')
+        btn2 = types.KeyboardButton('Ингредиенты яичного салата')
+        back = types.KeyboardButton('Вернуться в главное меню')
+        markup.row(btn1, btn2)
+        markup.add(back)
+        bot.send_message(message.chat.id, 'Что выберем?', reply_markup=markup)
+    elif message.text == 'Рецепт яичного салата':
+        bot.send_message(message.chat.id, '1.Яйца сварить вкрутую, охладить, почистить, мелко нарубить.\n'
+                                          '2. Мелко нарезать лук (только зеленую часть).\n'
+                                          '3. Соединить лук и яйца, добавить майонез \n'
+                                          '(можно приготовить самостоятельно), \n'
+                                          'соль, перец, тщательно перемешать.\n')
+        markup = types.InlineKeyboardMarkup()
+        btn1 = types.InlineKeyboardButton('Яичный салат', url='https://eda.ru/recepty/salaty/jaichnij-salat-47456')
+        markup.add(btn1)
+        bot.send_message(message.chat.id, 'Больше рецептов яичного салата смотрите на сайте!',
+                         reply_markup=markup)
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton('Ингредиенты яичного салата')
+        back = types.KeyboardButton('Вернуться в главное меню')
+        markup.add(btn1, back)
+        bot.send_message(message.chat.id, 'Продолжить просмотр?', reply_markup=markup)
+    elif message.text == 'Ингредиенты яичного салата':
+        bot.send_message(message.chat.id, '1.Куриное яйцо - 1,5 шт.\n'
+                                          '2.Майонез - 1,5 чайные ложки\n'
+                                          '3.Зелёный лук - по вкусу\n'
+                                          '4.Молотый чёрный перец - по вкусу\n'
+                                          '5.Соль - по вкусу\n')
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton('Рецепт яичного салата')
+        back = types.KeyboardButton('Вернуться в главное меню')
+        markup.add(btn1, back)
+        bot.send_message(message.chat.id, 'Продолжить просмотр?', reply_markup=markup)
+    elif message.text == 'Салат "Весенний"':
+        photo = r'https://eda.ru/recepty/salaty/salat-vesenniy-1264281'.format(
+            os.getcwd())
+        bot.send_photo(message.chat.id, photo)
+        markup = types.ReplyKeyboardMarkup()
+        btn1 = types.KeyboardButton('Рецепт салата "Весенний"')
+        btn2 = types.KeyboardButton('Ингредиенты салата "Весенний"')
+        back = types.KeyboardButton('Вернуться в главное меню')
+        markup.row(btn1, btn2)
+        markup.add(back)
+        bot.send_message(message.chat.id, 'Что выберем?', reply_markup=markup)
+    elif message.text == 'Рецепт салата "Весенний"':
+        bot.send_message(message.chat.id, '1.Яйца положить в кипящую воду и варить 11 минут.\n'
+                                          'Затем переместить их в холодную воду, \n'
+                                          'чтобы остановить приготовление и охладить.\n'
+                                          '2. Огурцы и редис нарезать тонкими кольцами, \n'
+                                          'яйца натереть на крупной терке, \n'
+                                          'а зеленый лук и укроп мелко нарезать. \n'
+                                          'Смешать все в большой чаше.\n'
+                                          '3.Заправить салат сметаной, посолить и поперчить по вкусу.')
+        markup = types.InlineKeyboardMarkup()
+        btn1 = types.InlineKeyboardButton('Салат "Весенний"', url='https://eda.ru/recepty/salaty/salat-vesenniy-126428')
+        markup.add(btn1)
+        bot.send_message(message.chat.id, 'Больше рецептов салата "Весенний" смотрите на сайте!',
+                         reply_markup=markup)
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton('Ингредиенты салата "Весенний"')
+        back = types.KeyboardButton('Вернуться в главное меню')
+        markup.add(btn1, back)
+        bot.send_message(message.chat.id, 'Продолжить просмотр?', reply_markup=markup)
+    elif message.text == 'Ингредиенты салата "Весенний"':
+        bot.send_message(message.chat.id, '1.Куриное яйцо - 1/2 шт.\n'
+                                          '2.Редис - 34 г.\n'
+                                          '3.Огурцы - 34 г.\n'
+                                          '4.Зелёный лук - 4 г.\n'
+                                          '5.Укроп - по вкусу\n'
+                                          '6.Сметана - 1,5 чайные ложки\n'
+                                          '7.Соль - по вкусу\n'
+                                          '8.Молотый чёрный перец - по вкусу\n')
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton('Рецепт салата "Весенний"')
         back = types.KeyboardButton('Вернуться в главное меню')
         markup.add(btn1, back)
         bot.send_message(message.chat.id, 'Продолжить просмотр?', reply_markup=markup)
@@ -180,13 +299,6 @@ def callback_message(callback):
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         btn1 = types.KeyboardButton('Яичный салат')
         btn2 = types.KeyboardButton('Салат "Весенний"')
-        back = types.KeyboardButton('Вернуться в главное меню')
-        markup.add(btn1, btn2, back)
-        bot.send_message(callback.message.chat.id, 'Какой салат хотите сделать?', reply_markup=markup)
-    elif callback.data == 'soup':
-        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        btn1 = types.KeyboardButton('Сырный суп-пюре')
-        btn2 = types.KeyboardButton('Грибной суп-пюре')
         back = types.KeyboardButton('Вернуться в главное меню')
         markup.add(btn1, btn2, back)
         bot.send_message(callback.message.chat.id, 'Какой салат хотите сделать?', reply_markup=markup)
